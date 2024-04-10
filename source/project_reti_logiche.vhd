@@ -1,8 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
 USE IEEE.NUMERIC_STD.ALL;
 USE work.custom_types.ALL;
 
@@ -30,59 +27,43 @@ architecture FSM of project_reti_logiche is
     type state_type is (
         RESET,
         READY,
-        SET_READ_MEM,
+        SET_READ_DATA,
         WAIT_MEM,
-        FETCH_DATA_MEM,
+        FETCH_DATA,
         UPDATE,
-        STEP,
-        DONE,
-        FINISH
+        WRITE_DATA,
+        WRITE_CRED,
+        ITERATE,
+        DONE
     );
     
-    signal k, next_k                        : std_logic_vector(9 downto 0) := (others => '0');
-    signal addr, next_addr                  : std_logic_vector(15 downto 0) := (others => '0');
-    signal data, next_data                  : std_logic_vector(7 downto 0) := (others => '0');
-    signal prev_data, next_prev_data        : std_logic_vector(7 downto 0) := (others => '0'); 
-    signal credibility, next_credibility    : std_logic_vector(4 downto 0) := (others => '0');
+    signal k, next_k                                : std_logic_vector(9 downto 0) := (others => '0');
+    signal addr, next_addr                          : std_logic_vector(15 downto 0) := (others => '0');
+    signal data, next_data                          : std_logic_vector(7 downto 0) := (others => '0');
+    signal last_valid_data, next_last_valid_data    : std_logic_vector(7 downto 0) := (others => '0'); 
+    signal credibility, next_credibility            : std_logic_vector(7 downto 0) := (others => '0');
     
-    signal next_o_done                      : std_logic := '0';
-    signal next_o_mem_addr                  : std_logic_vector(15 downto 0) := (others => '0');
-    signal next_o_mem_data                  : std_logic_vector(7 downto 0) := (others => '0');
-    signal next_o_mem_we                    : std_logic := '0';
-    signal next_o_mem_en                    : std_logic := '0';
+    signal next_o_done                              : std_logic := '0';
+    signal next_o_mem_addr                          : std_logic_vector(15 downto 0) := (others => '0');
+    signal next_o_mem_data                          : std_logic_vector(7 downto 0) := (others => '0');
+    signal next_o_mem_we                            : std_logic := '0';
+    signal next_o_mem_en                            : std_logic := '0';
 
-    signal state, next_state                : state_type := RESET;
+    signal state, next_state                        : state_type := RESET;
 
 begin
     STATE_REG : process(i_clk, i_rst)
     begin
         if i_rst = '1' then
             -- asynchronously reset the fsm
-            state               <= RESET;
-            next_state          <= RESET;
-
-            k                   <= (others => '0');
-            next_k              <= (others => '0');
-            addr                <= (others => '0');
-            next_addr           <= (others => '0');
-            data                <= (others => '0');
-            next_data           <= (others => '0');
-            prev_data           <= (others => '0');
-            next_prev_data      <= (others => '0');
-            credibility         <= (others => '0');
-            next_credibility    <= (others => '0');
-
-            next_o_done         <= '0';
-            next_o_mem_addr     <= (others => '0');
-            next_o_mem_data     <= (others => '0');
-            next_o_mem_we       <= '0';
-            next_o_mem_en       <= '0';
+            state                   <= RESET;
+            next_state              <= RESET;
 
         elsif rising_edge(i_clk) then
             -- update signals 
             k               <= next_k;
             addr            <= next_addr;
-            prev_data       <= next_prev_data;
+            last_valid_data <= next_last_valid_data;
             credibility     <= next_credibility;
             o_done          <= next_o_done;
             o_mem_addr      <= next_o_mem_addr;
@@ -93,11 +74,33 @@ begin
         end if
     end process
 
-    LAMBDA : process(state, i_start, i_add, i_k, i_mem_data)
+    LAMBDA_DELTA : process(state, i_start, i_add, i_k, i_mem_data)
     begin
         case state is
             when RESET =>
                 if i_rst = '1' then
+                    k                       <= (others => '0');
+                    next_k                  <= (others => '0');
+                    addr                    <= (others => '0');
+                    next_addr               <= (others => '0');
+                    data                    <= (others => '0');
+                    next_data               <= (others => '0');
+                    last_valid_data         <= (others => '0');
+                    next_last_valid_data    <= (others => '0');
+                    credibility             <= (others => '0');
+                    next_credibility        <= (others => '0');
+
+                    o_done                  <= '0';
+                    o_mem_addr              <= (others => '0');
+                    o_mem_data              <= (others => '0');
+                    o_mem_we                <= '0';
+                    o_mem_en                <= '0';
+                    next_o_done             <= '0';
+                    next_o_mem_addr         <= (others => '0');
+                    next_o_mem_data         <= (others => '0');
+                    next_o_mem_we           <= '0';
+                    next_o_mem_en           <= '0';
+
                     next_state <= RESET;
                 else
                     next_state <= READY;
@@ -107,7 +110,8 @@ begin
                 if i_start = '1' then
                     if i_k > (others => '0') then
                         next_k      <= i_k;
-                        next_state  <= SET_READ_MEM;
+                        next_addr   <= i_add;
+                        next_state  <= SET_READ_DATA;
                     else
                         next_state  <= DONE;
                     end if
@@ -115,33 +119,67 @@ begin
                     next_state <= READY;
                 end if
 
-            when SET_READ_MEM =>
+            when SET_READ_DATA =>
                 next_o_mem_en   <= '1';
-                next_o_mem_we   <= '0';
                 next_o_mem_addr <= addr;
                 next_state      <= WAIT_MEM;
             
             when WAIT_MEM =>
-                next_state <= FETCH_DATA_MEM;
+                next_state  <= FETCH_DATA;
             
-            when FETCH_DATA_MEM =>
-                next_data <= i_mem_data;
-                next_state <= UPDATE;
+            when FETCH_DATA =>
+                next_o_mem_en <= '0'
+                next_data   <= i_mem_data;
+
+                next_state  <= UPDATE;
 
             when UPDATE =>
+                if data /= (others => '0') then
+                    next_last_valid_data    <= data;
+                    next_credibility        <= std_logic_vector(UNSIGNED(31));
+                else
+                    if credibility /= (others => '0') then
+                        next_credibility    <= std_logic_vector(UNSIGNED(credibility) - 1);
+                    end if
+                end if
+
+                next_state  <= WRITE_DATA;
+
+            when WRITE_DATA =>
+                next_o_mem_en   <= '1';
+                next_o_mem_we   <= '1';
+                next_o_mem_addr <= addr;
+                next_o_mem_data <= last_valid_data;
                 
+                next_addr       <= std_logic_vector(UNSIGNED(addr) + 1)
+                next_state      <= WRITE_CRED;
                 
+            when WRITE_CRED =>
+                next_o_mem_addr <= addr;
+                next_o_mem_data <= credibility;
+
+            when ITERATE =>
+                next_o_mem_en   <= '0';
+                next_o_mem_we   <= '0';
+            
+                if k /= (others => '0') then
+                    next_k      <= std_logic_vector(UNSIGNED(k) - 1);
+                    next_addr   <= std_logic_vector(UNSIGNED(addr) + 1);
+                    next_state  <= SET_READ_DATA
+                else
+                    next_o_done     <= '1';
+                    next_o_mem_addr <= (others => '0');
+                    next_o_mem_data <= (others => '0');
+                    next_state      <= DONE;
+                end if
+
+            when DONE =>
+                if i_start = '1' then
+                    next_state  <= DONE;
+                else
+                    next_o_done <= '0';
+                    next_state  <= READY;
+                end if
     end process
 
-    DELTA : process(state, i_start, i_add, i_k, i_mem_data)
-        case state is
-            when RESET =>
-                o_done      <= '0';
-                o_mem_addr  <= (others => '0');
-                o_mem_data  <= (others => '0');
-                o_mem_we    <= '0';
-                o_mem_en    <= '0';
-    begin
-
-    end process
-end FSM;
+end FSM
