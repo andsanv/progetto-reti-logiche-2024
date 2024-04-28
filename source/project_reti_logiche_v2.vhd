@@ -30,7 +30,7 @@ architecture FSM of project_reti_logiche is
         FETCH_DATA,
         UPDATE,
         WRITE_DATA,
-        WRITE_CREDIBILITY,
+        WRITE_CRED,
         ITERATE,
         DONE
     );
@@ -49,7 +49,7 @@ architecture FSM of project_reti_logiche is
 
     signal state, next_state                        : state_type := RESET;
     
-    constant zero                                   : std_logic_vector(9 downto 0) := (others => '0');
+    constant zero : std_logic_vector(9 downto 0) := (others => '0');
 
 begin
     STATE_REG : process(i_clk, i_rst)
@@ -63,7 +63,7 @@ begin
             data                    <= (others => '0');
             last_valid_data         <= (others => '0');
             credibility             <= (others => '0');
-
+            
             o_done                  <= '0';
             o_mem_addr              <= (others => '0');
             o_mem_data              <= (others => '0');
@@ -76,20 +76,20 @@ begin
             data                    <= next_data;
             last_valid_data         <= next_last_valid_data;
             credibility             <= next_credibility;
-
+            
             o_done                  <= next_o_done;
             o_mem_addr              <= next_o_mem_addr;
             o_mem_data              <= next_o_mem_data;
             o_mem_we                <= next_o_mem_we;
             o_mem_en                <= next_o_mem_en;
-
+            
             state                   <= next_state;
         end if;
     end process;
 
     LAMBDA_DELTA : process(state, i_start, i_add, i_k, i_mem_data, k, addr, data, credibility, last_valid_data)
     begin
-        -- resetting singals and outputs to avoid inferred latches
+        -- resetting signals to avoid inferred latches
         -- this way, from one state to another, the "next" signals will keep their values instead of being reinitialized to zero
         next_k                  <= k;
         next_addr               <= addr;
@@ -97,13 +97,14 @@ begin
         next_last_valid_data    <= last_valid_data;
         next_credibility        <= credibility;
         
-        next_o_done             <= o_done;
-        next_o_mem_addr         <= o_mem_addr;
-        next_o_mem_data         <= o_mem_data;
-        next_o_mem_we           <= o_mem_we;
-        next_o_mem_en           <= o_mem_en;
-
-        next_state              <= state;
+        -- setting "next" outputs to '0' as reading from output is not possible
+        next_o_done             <= '0';
+        next_o_mem_addr         <= (others => '0');
+        next_o_mem_data         <= (others => '0');
+        next_o_mem_we           <= '0';
+        next_o_mem_en           <= '0';
+        
+        next_state <= state;
     
         case state is
             when RESET =>
@@ -133,10 +134,10 @@ begin
                 next_state      <= WAIT_MEM;
             
             when WAIT_MEM =>
+                next_o_mem_en   <= '1';
                 next_state      <= FETCH_DATA;
             
             when FETCH_DATA =>
-                next_o_mem_en   <= '0';
                 next_data       <= i_mem_data;
 
                 next_state      <= UPDATE;
@@ -151,51 +152,47 @@ begin
                     end if;
                 end if;
 
-                next_state  <= WRITE_DATA;
+                next_state                  <= WRITE_DATA;
 
             when WRITE_DATA =>
-                next_o_mem_en   <= '1';
-                next_o_mem_we   <= '1';
-                next_o_mem_addr <= addr;
-                next_o_mem_data <= last_valid_data;
+                next_o_mem_en       <= '1';
+                next_o_mem_we       <= '1';
+                next_o_mem_addr     <= addr;
+                next_o_mem_data     <= last_valid_data;
                 
-                next_addr       <= std_logic_vector(UNSIGNED(addr) + 1);
-                next_state      <= WRITE_CREDIBILITY;
+                next_addr           <= std_logic_vector(UNSIGNED(addr) + 1);
+                next_state          <= WRITE_CRED;
                 
-            when WRITE_CREDIBILITY =>
-                next_o_mem_addr <= addr;
-                next_o_mem_data <= credibility;
-                next_state      <= ITERATE;
+            when WRITE_CRED =>
+                next_o_mem_en       <= '1';
+                next_o_mem_we       <= '1';
+                next_o_mem_addr     <= addr;
+                next_o_mem_data     <= credibility;
+                
+                next_state          <= ITERATE;
 
-            when ITERATE =>
-                next_o_mem_en   <= '0';
-                next_o_mem_we   <= '0';
-            
-                if k /= zero then
-                    next_k      <= std_logic_vector(UNSIGNED(k) - 1);
-                    next_addr   <= std_logic_vector(UNSIGNED(addr) + 1);
-                    next_state  <= SET_READ_DATA;
+            when ITERATE => if k /= zero then
+                    next_k          <= std_logic_vector(UNSIGNED(k) - 1);
+                    next_addr       <= std_logic_vector(UNSIGNED(addr) + 1);
+                    
+                    next_state      <= SET_READ_DATA;
                 else
-                    next_o_done <= '1';
-                    next_state  <= DONE;
+                    next_o_done     <= '1';
+                    next_state      <= DONE;
                 end if;
 
             when DONE =>
                 if i_start = '1' then
-                    next_state              <= DONE;
+                    next_o_done                 <= '1';
+                    next_state                  <= DONE;
                 else
-                    next_k                  <= (others => '0');
-                    next_addr               <= (others => '0');
-                    next_data               <= (others => '0');
-                    next_last_valid_data    <= (others => '0');
-                    next_credibility        <= (others => '0');
+                    next_k                      <= (others => '0');
+                    next_addr                   <= (others => '0');
+                    next_data                   <= (others => '0');
+                    next_last_valid_data        <= (others => '0');
+                    next_credibility            <= (others => '0');
                     
-                    -- o_mem_en and o_mem_we already set to zero
-                    next_o_mem_addr         <= (others => '0');
-                    next_o_mem_data         <= (others => '0');
-                    next_o_done             <= '0';
-
-                    next_state              <= READY;
+                    next_state                  <= READY;
                 end if;
         end case;
     end process;
