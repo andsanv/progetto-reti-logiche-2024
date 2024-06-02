@@ -78,10 +78,42 @@ Essa comunica con la memoria, esegue computazione, e asserisce gli output.
             node distance=2.5cm, % specifies the minimum distance between two nodes. Change if n
             every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ n
             initial text=$ $, % sets the text that appears on the start arrow
-        }
-        \node[state] (set_read_data_state) {SET_READ_DATA};
-        \node[state, initial, right of=set_read_data_state] (reset_state) {RESET};
-        \node[state, below of=reset_state] (ready_state) {READY};
+            }
+        \node[state, initial, minimum width=1.75cm] (reset_state) {\small RESET};
+        \node[state, right of=reset_state, minimum width=1.75cm] (ready_state) {\small READY};
+        \node[state, right of=ready_state, xshift=1.5cm, minimum width=1.75cm] (update_state) {\small UPDATE};
+        \node[state, above of=update_state, minimum width=1.75cm] (fetch_data_state) {\small F\_DATA};
+        \node[state, above of=fetch_data_state, minimum width=1.75cm] (wait_mem_state) {\small W\_MEM};
+        \node[state, above of=wait_mem_state, xshift=-1.5cm, minimum width=1.75cm] (set_read_data_state) {\small SR\_DATA};
+        \node[state, below of=update_state, minimum width=1.75cm] (write_data_state) {\small W\_DATA};
+        \node[state, below of=write_data_state, minimum width=1.75cm] (write_cred_state) {\small W\_CRED};
+        \node[state, below of=write_cred_state, minimum width=1.75cm] (iterate_state) {\small ITERATE};
+        \node[state, below of=iterate_state, xshift=-1.5cm, minimum width=1.75cm] (done_state) {\small DONE};
+    
+        \path (reset_state) edge (ready_state);
+        \path (reset_state) edge [loop above] (reset_state);
+        
+        \path (ready_state) edge [bend left=20] (set_read_data_state);
+        
+        \draw (ready_state) to [out=105, in=135, looseness=10] (ready_state);
+        
+        % \draw (ready_state) to [out=280, in=100, looseness = 1] (done_state);
+        % \draw (done_state) to [out=110, in=270,  looseness = 1] (ready_state);
+        \path (done_state) edge [loop below] (done_state);
+        
+        % \draw (ready_state) .. controls , looseness = 0.5] (done_state);
+        
+        \path (set_read_data_state) edge (wait_mem_state);
+        \path (wait_mem_state) edge (fetch_data_state);
+        \path (fetch_data_state) edge (update_state);
+        \path (update_state) edge (write_data_state);
+        \path (write_data_state) edge (write_cred_state);
+        \path (write_cred_state) edge (iterate_state);
+        \path (iterate_state) edge (done_state);
+        
+        \draw (done_state) .. controls (-1,1) and (-1,-1) .. (ready_state);
+        \draw (iterate_state) .. controls (11,-2) and (10,6) .. (set_read_data_state);
+        % \path (done_state) edge[bend left=16] (ready_state);
     \end{tikzpicture}
     \caption{FSM del modulo}
     \label{fig:my_label}
