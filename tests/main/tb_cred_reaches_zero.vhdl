@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_1 is
+entity project_tb_cred_reaches_zero is
 end entity;
 
-architecture project_tb_1_arch of project_tb_1 is
+architecture project_tb_cred_reaches_zero_arch of project_tb_cred_reaches_zero is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;

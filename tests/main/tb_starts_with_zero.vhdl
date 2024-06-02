@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_1 is
+entity project_tb_starts_with_zero is
 end entity;
 
-architecture project_tb_1_arch of project_tb_1 is
+architecture project_tb_starts_with_zero_arch of project_tb_starts_with_zero is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -21,8 +21,11 @@ architecture project_tb_1_arch of project_tb_1 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 0;
+    constant SCENARIO_LENGTH : integer := 16;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
+
+    signal scenario_input : scenario_type := (0,  0,  0,  0,  0,  0,  0,  0, 91,  0, 91,  0, 254,  0, 91,  0);
+    signal scenario_full  : scenario_type := (0,  0,  0,  0,  0,  0,  0,  0, 91, 31, 91, 31, 254, 31, 91, 31);
 
     signal memory_control : std_logic := '0';
 
@@ -122,7 +125,13 @@ begin
         wait until falling_edge(tb_clk); -- Skew the testbench transitions with respect to the clock
 
         -- Configure the memory        
-        -- nothing to do as k equals 0
+        for i in 0 to SCENARIO_LENGTH*2-1 loop
+            init_o_mem_addr<= std_logic_vector(to_unsigned(SCENARIO_ADDRESS+i, 16));
+            init_o_mem_data<= std_logic_vector(to_unsigned(scenario_input(i),8));
+            init_o_mem_en  <= '1';
+            init_o_mem_we  <= '1';
+            wait until rising_edge(tb_clk);   
+        end loop;
         
         wait until falling_edge(tb_clk);
 
@@ -164,6 +173,10 @@ begin
         end loop;
 
         assert tb_o_mem_en = '0' or tb_o_mem_we = '0' report "TEST FALLITO o_mem_en !=0 memory should not be written after done." severity failure;
+
+        for i in 0 to SCENARIO_LENGTH*2-1 loop
+            assert RAM(SCENARIO_ADDRESS+i) = std_logic_vector(to_unsigned(scenario_full(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(SCENARIO_ADDRESS+i)))) severity failure;
+        end loop;
 
         wait until falling_edge(tb_start);
         assert tb_done = '1' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
