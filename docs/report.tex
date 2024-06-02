@@ -71,51 +71,54 @@ Essa comunica con la memoria, esegue computazione, e asserisce gli output.
 
 \begin{figure}[ht]
     \centering
-    \begin{tikzpicture}
+    \begin{tikzpicture}[]
         \tikzset{
             ->,  % makes the edges directed
             >=stealth, % makes the arrow heads bold
-            node distance=2.5cm, % specifies the minimum distance between two nodes. Change if n
-            every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ n
+            node distance=1.6cm, % specifies the minimum distance between two nodes. Change if n
+            every state/.style={fill=gray!10, minimum size = 1.1cm}, % sets the properties for each ’state’ n
             initial text=$ $, % sets the text that appears on the start arrow
             }
-        \node[state, initial, minimum width=1.75cm] (reset_state) {\small RESET};
-        \node[state, right of=reset_state, minimum width=1.75cm] (ready_state) {\small READY};
-        \node[state, right of=ready_state, xshift=1.5cm, minimum width=1.75cm] (update_state) {\small UPDATE};
-        \node[state, above of=update_state, minimum width=1.75cm] (fetch_data_state) {\small F\_DATA};
-        \node[state, above of=fetch_data_state, minimum width=1.75cm] (wait_mem_state) {\small W\_MEM};
-        \node[state, above of=wait_mem_state, xshift=-1.5cm, minimum width=1.75cm] (set_read_data_state) {\small SR\_DATA};
-        \node[state, below of=update_state, minimum width=1.75cm] (write_data_state) {\small W\_DATA};
-        \node[state, below of=write_data_state, minimum width=1.75cm] (write_cred_state) {\small W\_CRED};
-        \node[state, below of=write_cred_state, minimum width=1.75cm] (iterate_state) {\small ITERATE};
-        \node[state, below of=iterate_state, xshift=-1.5cm, minimum width=1.75cm] (done_state) {\small DONE};
+
+        % nodes
+        \node[state, initial] (reset_state) {\tiny RESET};
+        \node[state, right of=reset_state] (ready_state) {\tiny READY};
+        \node[state, right of=ready_state, xshift=2cm, yshift=1.35cm] (update_state) {\tiny UPDATE};
+        \node[state, above of=update_state] (fetch_data_state) {\tiny F\_DATA};
+        \node[state, above of=fetch_data_state] (wait_mem_state) {\tiny W\_MEM};
+        \node[state, above of=wait_mem_state] (set_read_data_state) {\tiny SR\_DATA};
+        \node[state, below of=update_state] (write_data_state) {\tiny W\_DATA};
+        \node[state, below of=write_data_state] (write_cred_state) {\tiny W\_CRED};
+        \node[state, below of=write_cred_state] (iterate_state) {\tiny ITER};
+        \node[state, below of=iterate_state] (done_state) {\tiny DONE};
     
+        % reset state paths
         \path (reset_state) edge (ready_state);
-        \path (reset_state) edge [loop above] (reset_state);
+        \path (reset_state) edge [loop above, looseness=10] node [yshift=0.1cm] {\footnotesize \(i\_reset = 1\)} (reset_state);
         
-        \path (ready_state) edge [bend left=20] (set_read_data_state);
+        % ready state paths
+        \draw (ready_state) .. controls ++(2.5,1.5) and ++(-2.5,-2) .. node [left, xshift=-0.1cm] {\footnotesize \(i\_start = 1\), \(i\_k > 0\)} (set_read_data_state);
+        \path (ready_state) edge [loop above, looseness=10] node [yshift=0.08cm] {\footnotesize \(i\_start = 0\)} (ready_state);
+        \draw (ready_state) .. controls ++(2.5,-1.5) and ++(-2.5,2) .. node[right, pos=0.075, xshift=0.1cm] {\footnotesize \(i\_start = 1\)} node[right, pos=0.15, xshift=0.1cm] {\footnotesize \(i\_k = 0\)} (done_state);
+        \draw (ready_state) .. controls ++(2.5,1.5) and ++(-2.5,-2) .. (set_read_data_state);
+
+        % done state paths
+        \path (done_state) edge [loop below] node {\footnotesize \(i\_start = 1\)} (done_state);
+        \draw (done_state) .. controls ++(-2,0) and ++(0,-3) .. node[midway, left, xshift=-0.2cm] {\footnotesize \(i\_start = 0\)} (ready_state);
         
-        \draw (ready_state) to [out=105, in=135, looseness=10] (ready_state);
+        % iterate state paths
+        \path (iterate_state) edge node [midway, right, xshift=0.1cm] {\footnotesize \(k = 0\)} (done_state);
+        \draw (iterate_state) .. controls ++(3,2) and ++(3,-2) .. node[midway, right, xshift=0.1cm] {\footnotesize \(k > 0\)} (set_read_data_state);
         
-        % \draw (ready_state) to [out=280, in=100, looseness = 1] (done_state);
-        % \draw (done_state) to [out=110, in=270,  looseness = 1] (ready_state);
-        \path (done_state) edge [loop below] (done_state);
-        
-        % \draw (ready_state) .. controls , looseness = 0.5] (done_state);
-        
+        % other states paths
         \path (set_read_data_state) edge (wait_mem_state);
         \path (wait_mem_state) edge (fetch_data_state);
         \path (fetch_data_state) edge (update_state);
         \path (update_state) edge (write_data_state);
         \path (write_data_state) edge (write_cred_state);
         \path (write_cred_state) edge (iterate_state);
-        \path (iterate_state) edge (done_state);
-        
-        \draw (done_state) .. controls (-1,1) and (-1,-1) .. (ready_state);
-        \draw (iterate_state) .. controls (11,-2) and (10,6) .. (set_read_data_state);
-        % \path (done_state) edge[bend left=16] (ready_state);
     \end{tikzpicture}
-    \caption{FSM del modulo}
+    \caption{schema della FSM del modulo}
     \label{fig:my_label}
 \end{figure}
 
