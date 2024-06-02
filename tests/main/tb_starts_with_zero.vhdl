@@ -21,7 +21,7 @@ architecture project_tb_starts_with_zero_arch of project_tb_starts_with_zero is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 16;
+    constant SCENARIO_LENGTH : integer := 8;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
 
     signal scenario_input : scenario_type := (0,  0,  0,  0,  0,  0,  0,  0, 91,  0, 91,  0, 254,  0, 91,  0);

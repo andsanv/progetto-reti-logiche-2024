@@ -6,7 +6,7 @@ use std.textio.all;
 entity project_tb_1_base is
 end entity;
 
-architecture project_tb_1_arch of project_tb_1_base is
+architecture project_tb_1_base_arch of project_tb_1_base is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
