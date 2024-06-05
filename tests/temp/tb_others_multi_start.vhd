@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity tb_reset_during_read is
-end tb_reset_during_read;
+entity tb_others_reset_during_read is
+end tb_others_reset_during_read;
 
-architecture tb_reset_during_read_arch of tb_reset_during_read is
+architecture tb_others_reset_during_read_arch of tb_others_reset_during_read is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;

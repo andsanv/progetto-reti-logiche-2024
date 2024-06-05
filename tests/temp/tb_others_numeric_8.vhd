@@ -1,14 +1,12 @@
--- TB EXAMPLE PFRL 2023-2024
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_02 is
-end project_tb_02;
+entity tb_others_numeric_8 is
+end tb_others_numeric_8;
 
-architecture project_tb_02_arch of project_tb_02 is
+architecture tb_others_numeric_8_arch of tb_others_numeric_8 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -23,15 +21,15 @@ architecture project_tb_02_arch of project_tb_02 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 15;
+    constant SCENARIO_LENGTH : integer := 50;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
 
-    signal scenario_input : scenario_type := (0, 0, 0, 0,  64,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 100,  0, 1,  0, 0,  0, 5,  0, 23,  0, 200,  0,   0,  0 );
-    signal scenario_full  : scenario_type := (0, 0, 0, 0,  64, 31, 64, 30, 64, 29, 64, 28, 64, 27, 64, 26, 100, 31, 1, 31, 1, 30, 5, 31, 23, 31, 200, 31, 200, 30 );
+    signal scenario_input : scenario_type := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 2, 0, 0, 0, 0, 0, 2, 0, 3, 0);
+    signal scenario_full  : scenario_type := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 31, 3, 31, 2, 31, 2, 30, 2, 29, 2, 31, 3, 31 );
 
     signal memory_control : std_logic := '0';
     
-    constant SCENARIO_ADDRESS : integer := 5621;
+    constant SCENARIO_ADDRESS : integer := 1234;
 
     component project_reti_logiche is
         port (

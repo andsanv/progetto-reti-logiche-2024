@@ -5,10 +5,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_08 is
-end project_tb_08;
+entity tb_others_numeric_12 is
+end tb_others_numeric_12;
 
-architecture project_tb_08_arch of project_tb_08 is
+architecture tb_others_numeric_12_arch of tb_others_numeric_12 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;

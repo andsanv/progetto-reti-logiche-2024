@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity tb5 is
-end tb5;
+entity tb_others_numeric_4 is
+end tb_others_numeric_4;
 
-architecture project_tb_arch of tb5 is
+architecture tb_others_numeric_4_arch of tb_others_numeric_4 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -21,15 +21,15 @@ architecture project_tb_arch of tb5 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 16#010#;
+    constant SCENARIO_LENGTH : integer := 16#00A#;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
 
-    signal scenario_input : scenario_type := (16#FF#, 16#00#, 16#5B#, 16#00#, 16#A1#, 16#00#, 16#9B#, 16#00#, 16#B2#, 16#00#, 16#0B#, 16#00#, 16#53#, 16#00#, 16#1B#, 16#00#, 16#39#, 16#00#, 16#81#, 16#00#, 16#27#, 16#00#, 16#F3#, 16#00#, 16#9E#, 16#00#, 16#AD#, 16#00#, 16#86#, 16#00#, 16#3A#, 16#00#);
-    signal scenario_full  : scenario_type := (16#FF#, 16#1F#, 16#5B#, 16#1F#, 16#A1#, 16#1F#, 16#9B#, 16#1F#, 16#B2#, 16#1F#, 16#0B#, 16#1F#, 16#53#, 16#1F#, 16#1B#, 16#1F#, 16#39#, 16#1F#, 16#81#, 16#1F#, 16#27#, 16#1F#, 16#F3#, 16#1F#, 16#9E#, 16#1F#, 16#AD#, 16#1F#, 16#86#, 16#1F#, 16#3A#, 16#1F#);
+    signal scenario_input : scenario_type := (16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#8F#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#);
+    signal scenario_full  : scenario_type := (16#FF#, 16#1F#, 16#FF#, 16#1E#, 16#FF#, 16#1D#, 16#8F#, 16#1F#, 16#8F#, 16#1E#, 16#8F#, 16#1D#, 16#8F#, 16#1C#, 16#8F#, 16#1B#, 16#8F#, 16#1A#, 16#8F#, 16#19#);
 
     signal memory_control : std_logic := '0';
     
-    constant SCENARIO_ADDRESS : integer := 16#03B0#;
+    constant SCENARIO_ADDRESS : integer := 16#0013#;
 
     component project_reti_logiche is
         port (

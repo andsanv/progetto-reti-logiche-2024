@@ -5,10 +5,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_06 is
-end project_tb_06;
+entity tb_others_numeric_11 is
+end tb_others_numeric_11;
 
-architecture project_tb_06_arch of project_tb_06 is
+architecture tb_others_numeric_11_arch of tb_others_numeric_11 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -23,41 +23,31 @@ architecture project_tb_06_arch of project_tb_06 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 14;
+    signal memory_control : std_logic := '0';
+
+    -- first run
+    constant SCENARIO_LENGTH : integer := 66;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
-
-    signal scenario_input : scenario_type := (128, 0,  64, 0,   0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 100,  0, 1,  0, 0,  0, 5,  0, 23,  0, 200,  0,   0,  0 );
-    signal scenario_full  : scenario_type := (128, 31, 64, 31, 64, 30, 64, 29, 64, 28, 64, 27, 64, 26, 100, 31, 1, 31, 1, 30, 5, 31, 23, 31, 200, 31, 200, 30 );
-
-    constant SCENARIO_ADDRESS : integer := 1234;
+    signal scenario_input : scenario_type := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    signal scenario_full  : scenario_type := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    constant SCENARIO_ADDRESS : integer := 890;
 
     -- second run
 
-    constant SCENARIO_LENGTH_2 : integer := 16;
+    constant SCENARIO_LENGTH_2 : integer := 25;
     type scenario_type_2 is array (0 to SCENARIO_LENGTH_2*2-1) of integer;
-    signal scenario_input_2 : scenario_type_2 := (0, 0, 34, 0, 2, 0, 5, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 0, 1, 0, 0, 0 );
-    signal scenario_full_2  : scenario_type_2 := (0, 0, 34, 31, 2, 31, 5, 31, 6, 31, 6, 30, 6, 29, 6, 28, 6, 27, 6, 26, 6, 25, 3, 31, 3, 30, 2, 31, 1, 31, 1, 30);
-
-    constant SCENARIO_ADDRESS_2 : integer := 6723;
+    signal scenario_input_2 : scenario_type_2 := (2, 0, 5, 0, 6, 0, 8, 0, 4, 0, 1, 0, 95, 0, 75, 0, 159, 0, 1, 0, 68, 0, 2, 0, 83, 0, 86, 0, 32, 0, 52, 0, 65, 0, 56, 0, 8, 0, 4, 0, 63, 0, 2, 0, 45, 0, 15, 0, 21, 0);
+    signal scenario_full_2  : scenario_type_2 := (2, 31, 5, 31, 6, 31, 8, 31, 4, 31, 1, 31, 95, 31, 75, 31, 159, 31, 1, 31, 68, 31, 2, 31, 83, 31, 86, 31, 32, 31, 52, 31, 65, 31, 56, 31, 8, 31, 4, 31, 63, 31, 2, 31, 45, 31, 15, 31, 21, 31);
+    constant SCENARIO_ADDRESS_2 : integer := 3;
 
 
     -- third run
 
-    constant SCENARIO_LENGTH_3 : integer := 9;
+    constant SCENARIO_LENGTH_3 : integer := 53;
     type scenario_type_3 is array (0 to SCENARIO_LENGTH_3*2-1) of integer;
-    signal scenario_input_3 : scenario_type_3 := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 254, 0, 0, 0);
-    signal scenario_full_3  : scenario_type_3 := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 31, 255, 30, 254, 31, 254, 30);
-
-    constant SCENARIO_ADDRESS_3 : integer := 50213;
-
-
-
-
-
-
-    signal memory_control : std_logic := '0';
-    
-    
+    signal scenario_input_3 : scenario_type_3 := (0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 9, 0, 0, 0, 0, 0, 2, 0, 1, 0, 44, 0, 56, 0, 234, 0, 123, 0);
+    signal scenario_full_3  : scenario_type_3 := (0, 0, 0, 0, 2, 31, 3, 31, 3, 30, 3, 29, 3, 28, 3, 27, 3, 26, 3, 25, 3, 24, 3, 23, 3, 22, 3, 21, 3, 20, 3, 19, 3, 18, 3, 17, 3, 16, 3, 15, 3, 14, 3, 13, 3, 12, 3, 11, 3, 10, 3, 9, 3, 8, 3, 7, 3, 6, 3, 5, 3, 4, 3, 3, 3, 2, 3, 1, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 2, 31, 9, 31, 9, 30, 9, 29, 2, 31, 1, 31, 44, 31, 56, 31, 234, 31, 123, 31);
+    constant SCENARIO_ADDRESS_3 : integer := 40000;
 
     component project_reti_logiche is
         port (

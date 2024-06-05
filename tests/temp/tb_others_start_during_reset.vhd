@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity tb4 is
-end tb4;
+entity tb_others_start_during_reset is
+end tb_others_start_during_reset;
 
-architecture project_tb_arch of tb4 is
+architecture tb_others_start_during_reset_arch of tb_others_start_during_reset is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -21,15 +21,28 @@ architecture project_tb_arch of tb4 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 16#00A#;
-    type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
-
-    signal scenario_input : scenario_type := (16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#8F#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#);
-    signal scenario_full  : scenario_type := (16#FF#, 16#1F#, 16#FF#, 16#1E#, 16#FF#, 16#1D#, 16#8F#, 16#1F#, 16#8F#, 16#1E#, 16#8F#, 16#1D#, 16#8F#, 16#1C#, 16#8F#, 16#1B#, 16#8F#, 16#1A#, 16#8F#, 16#19#);
-
     signal memory_control : std_logic := '0';
-    
-    constant SCENARIO_ADDRESS : integer := 16#0013#;
+
+    constant SCENARIO_LENGTH_1 : integer := 16#00A#;
+    constant SCENARIO_ADDRESS_1 : integer := 16#0064#;
+    type scenario_type_1 is array (0 to SCENARIO_LENGTH_1*2-1) of integer;
+
+    signal scenario_input_1 : scenario_type_1 := (16#33#, 16#00#, 16#00#, 16#00#, 16#39#, 16#00#, 16#18#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#7E#, 16#00#, 16#00#, 16#00#, 16#C0#, 16#00#, 16#00#, 16#00#);
+    signal scenario_full_1  : scenario_type_1 := (16#33#, 16#1F#, 16#33#, 16#1E#, 16#39#, 16#1F#, 16#18#, 16#1F#, 16#18#, 16#1E#, 16#18#, 16#1D#, 16#7E#, 16#1F#, 16#7E#, 16#1E#, 16#C0#, 16#1F#, 16#C0#, 16#1E#);
+
+    constant SCENARIO_LENGTH_2 : integer := 16#023#;
+    constant SCENARIO_ADDRESS_2 : integer := 16#0064#;
+    type scenario_type_2 is array (0 to SCENARIO_LENGTH_2*2-1) of integer;
+
+    signal scenario_input_2 : scenario_type_2 := (16#33#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#);
+    signal scenario_full_2  : scenario_type_2 := (16#33#, 16#1F#, 16#33#, 16#1E#, 16#33#, 16#1D#, 16#33#, 16#1C#, 16#33#, 16#1B#, 16#33#, 16#1A#, 16#33#, 16#19#, 16#33#, 16#18#, 16#33#, 16#17#, 16#33#, 16#16#, 16#33#, 16#15#, 16#33#, 16#14#, 16#33#, 16#13#, 16#33#, 16#12#, 16#33#, 16#11#, 16#33#, 16#10#, 16#33#, 16#0F#, 16#33#, 16#0E#, 16#33#, 16#0D#, 16#33#, 16#0C#, 16#33#, 16#0B#, 16#33#, 16#0A#, 16#33#, 16#09#, 16#33#, 16#08#, 16#33#, 16#07#, 16#33#, 16#06#, 16#33#, 16#05#, 16#33#, 16#04#, 16#33#, 16#03#, 16#33#, 16#02#, 16#33#, 16#01#, 16#33#, 16#00#, 16#33#, 16#00#, 16#33#, 16#00#, 16#33#, 16#00#);
+
+    constant SCENARIO_LENGTH_3 : integer := 16#021#;
+    constant SCENARIO_ADDRESS_3 : integer := 16#0214#;
+    type scenario_type_3 is array (0 to SCENARIO_LENGTH_3*2-1) of integer;
+
+    signal scenario_input_3 : scenario_type_3 := (16#00#, 16#00#, 16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#89#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#6F#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#B5#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#F6#, 16#00#, 16#7C#, 16#00#, 16#00#, 16#00#, 16#5D#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#);
+    signal scenario_full_3  : scenario_type_3 := (16#00#, 16#00#, 16#FF#, 16#1F#, 16#FF#, 16#1E#, 16#FF#, 16#1D#, 16#89#, 16#1F#, 16#89#, 16#1E#, 16#89#, 16#1D#, 16#89#, 16#1C#, 16#89#, 16#1B#, 16#89#, 16#1A#, 16#89#, 16#19#, 16#89#, 16#18#, 16#89#, 16#17#, 16#6F#, 16#1F#, 16#6F#, 16#1E#, 16#6F#, 16#1D#, 16#6F#, 16#1C#, 16#B5#, 16#1F#, 16#B5#, 16#1E#, 16#B5#, 16#1D#, 16#B5#, 16#1C#, 16#B5#, 16#1B#, 16#B5#, 16#1A#, 16#F6#, 16#1F#, 16#7C#, 16#1F#, 16#7C#, 16#1E#, 16#5D#, 16#1F#, 16#5D#, 16#1E#, 16#5D#, 16#1D#, 16#5D#, 16#1C#, 16#5D#, 16#1B#, 16#5D#, 16#1A#, 16#5D#, 16#19#);
 
     component project_reti_logiche is
         port (
@@ -119,15 +132,18 @@ begin
         -- Wait some time for the component to reset...
         wait for 50 ns;
         
-        tb_rst <= '0';
+        -- Start = 1 before reset = '0'
+        tb_start <= '1';
+        wait for 200 ns;
+        
         memory_control <= '0';  -- Memory controlled by the testbench
         
         wait until falling_edge(tb_clk); -- Skew the testbench transitions with respect to the clock
 
         -- Configure the memory        
-        for i in 0 to SCENARIO_LENGTH*2-1 loop
-            init_o_mem_addr<= std_logic_vector(to_unsigned(SCENARIO_ADDRESS+i, 16));
-            init_o_mem_data<= std_logic_vector(to_unsigned(scenario_input(i),8));
+        for i in 0 to SCENARIO_LENGTH_1*2-1 loop
+            init_o_mem_addr<= std_logic_vector(to_unsigned(SCENARIO_ADDRESS_1+i, 16));
+            init_o_mem_data<= std_logic_vector(to_unsigned(scenario_input_1(i),8));
             init_o_mem_en  <= '1';
             init_o_mem_we  <= '1';
             wait until rising_edge(tb_clk);   
@@ -137,10 +153,10 @@ begin
 
         memory_control <= '1';  -- Memory controlled by the component
         
-        tb_add <= std_logic_vector(to_unsigned(SCENARIO_ADDRESS, 16));
-        tb_k   <= std_logic_vector(to_unsigned(SCENARIO_LENGTH, 10));
+        tb_add <= std_logic_vector(to_unsigned(SCENARIO_ADDRESS_1, 16));
+        tb_k   <= std_logic_vector(to_unsigned(SCENARIO_LENGTH_1, 10));
         
-        tb_start <= '1';
+        tb_rst <= '0'; -- Now reset = 0 and start = 1
 
         while tb_done /= '1' loop                
             wait until rising_edge(tb_clk);
@@ -161,12 +177,12 @@ begin
         wait until tb_rst = '1';
         wait for 25 ns;
         assert tb_done = '0' report "TEST FALLITO o_done !=0 during reset" severity failure;
-        wait until tb_rst = '0';
-
+        
         wait until falling_edge(tb_clk);
         assert tb_done = '0' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
         
-        wait until rising_edge(tb_start);
+        -- This is my start, as start is already high. When I set reset to 0, the component can start
+        wait until tb_rst = '0';
 
         while tb_done /= '1' loop                
             wait until rising_edge(tb_clk);
@@ -174,9 +190,11 @@ begin
 
         assert tb_o_mem_en = '0' or tb_o_mem_we = '0' report "TEST FALLITO o_mem_en !=0 memory should not be written after done." severity failure;
 
-        for i in 0 to SCENARIO_LENGTH*2-1 loop
-            assert RAM(SCENARIO_ADDRESS+i) = std_logic_vector(to_unsigned(scenario_full(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(i)))) severity failure;
+        
+        for i in 0 to SCENARIO_LENGTH_1*2-1 loop
+            assert RAM(SCENARIO_ADDRESS_1+i) = std_logic_vector(to_unsigned(scenario_full_1(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full_1(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(SCENARIO_ADDRESS_1+i)))) severity failure;
         end loop;
+        
 
         wait until falling_edge(tb_start);
         assert tb_done = '1' report "TEST FALLITO o_done !=0 after reset before start" severity failure;

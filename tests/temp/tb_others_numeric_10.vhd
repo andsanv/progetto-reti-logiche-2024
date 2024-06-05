@@ -5,10 +5,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_05 is
-end project_tb_05;
+entity tb_others_numeric_10 is
+end tb_others_numeric_10;
 
-architecture project_tb_05_arch of project_tb_05 is
+architecture tb_others_numeric_10_arch of tb_others_numeric_10 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -23,15 +23,41 @@ architecture project_tb_05_arch of project_tb_05 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 26;
+    constant SCENARIO_LENGTH : integer := 14;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
 
-    signal scenario_input : scenario_type := (23, 0, 0, 0, 1, 0, 34, 0, 32, 0, 9, 0, 0, 0, 23, 0, 3, 0, 78, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 0, 56, 0, 192, 0, 0, 0, 0, 0, 0, 0, 255, 0, 255, 0, 0, 0, 0, 0, 255, 0 );
-    signal scenario_full  : scenario_type := (23, 31, 23, 30, 1, 31, 34, 31, 32, 31, 9, 31, 9, 30, 23, 31, 3, 31, 78, 31, 2, 31, 2, 30, 2, 29, 2, 28, 2, 31, 4, 31, 56, 31, 192, 31, 192, 30, 192, 29, 192, 28, 255, 31, 255, 31, 255, 30, 255, 29, 255, 31 );
+    signal scenario_input : scenario_type := (128, 0,  64, 0,   0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 100,  0, 1,  0, 0,  0, 5,  0, 23,  0, 200,  0,   0,  0 );
+    signal scenario_full  : scenario_type := (128, 31, 64, 31, 64, 30, 64, 29, 64, 28, 64, 27, 64, 26, 100, 31, 1, 31, 1, 30, 5, 31, 23, 31, 200, 31, 200, 30 );
+
+    constant SCENARIO_ADDRESS : integer := 1234;
+
+    -- second run
+
+    constant SCENARIO_LENGTH_2 : integer := 16;
+    type scenario_type_2 is array (0 to SCENARIO_LENGTH_2*2-1) of integer;
+    signal scenario_input_2 : scenario_type_2 := (0, 0, 34, 0, 2, 0, 5, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 0, 1, 0, 0, 0 );
+    signal scenario_full_2  : scenario_type_2 := (0, 0, 34, 31, 2, 31, 5, 31, 6, 31, 6, 30, 6, 29, 6, 28, 6, 27, 6, 26, 6, 25, 3, 31, 3, 30, 2, 31, 1, 31, 1, 30);
+
+    constant SCENARIO_ADDRESS_2 : integer := 6723;
+
+
+    -- third run
+
+    constant SCENARIO_LENGTH_3 : integer := 9;
+    type scenario_type_3 is array (0 to SCENARIO_LENGTH_3*2-1) of integer;
+    signal scenario_input_3 : scenario_type_3 := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 254, 0, 0, 0);
+    signal scenario_full_3  : scenario_type_3 := (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 31, 255, 30, 254, 31, 254, 30);
+
+    constant SCENARIO_ADDRESS_3 : integer := 50213;
+
+
+
+
+
 
     signal memory_control : std_logic := '0';
     
-    constant SCENARIO_ADDRESS : integer := 1234;
+    
 
     component project_reti_logiche is
         port (
@@ -134,6 +160,27 @@ begin
             init_o_mem_we  <= '1';
             wait until rising_edge(tb_clk);   
         end loop;
+
+
+        -- Configure second run
+        
+        for i in 0 to SCENARIO_LENGTH_2*2-1 loop
+            init_o_mem_addr<= std_logic_vector(to_unsigned(SCENARIO_ADDRESS_2+i, 16));
+            init_o_mem_data<= std_logic_vector(to_unsigned(scenario_input_2(i),8));
+            init_o_mem_en  <= '1';
+            init_o_mem_we  <= '1';
+            wait until rising_edge(tb_clk);   
+        end loop;
+
+        -- Configure third run
+
+        for i in 0 to SCENARIO_LENGTH_3*2-1 loop
+            init_o_mem_addr<= std_logic_vector(to_unsigned(SCENARIO_ADDRESS_3+i, 16));
+            init_o_mem_data<= std_logic_vector(to_unsigned(scenario_input_3(i),8));
+            init_o_mem_en  <= '1';
+            init_o_mem_we  <= '1';
+            wait until rising_edge(tb_clk);   
+        end loop;
         
         wait until falling_edge(tb_clk);
 
@@ -147,11 +194,45 @@ begin
         while tb_done /= '1' loop                
             wait until rising_edge(tb_clk);
         end loop;
-        
-        -- test a delay where start doesn't set to zero soon after the done signal
-        wait for 45 ns;
+
+        wait for 5 ns;
         
         tb_start <= '0';
+
+        -- start sencond run without reset
+
+        wait for 50 ns;
+
+        tb_add <= std_logic_vector(to_unsigned(SCENARIO_ADDRESS_2, 16));
+        tb_k   <= std_logic_vector(to_unsigned(SCENARIO_LENGTH_2, 10));
+        
+        tb_start <= '1';
+
+        while tb_done /= '1' loop                
+            wait until rising_edge(tb_clk);
+        end loop;
+
+        wait for 5 ns;
+        
+        tb_start <= '0';
+
+        -- start third run without reset
+
+        wait for 50 ns;
+
+        tb_add <= std_logic_vector(to_unsigned(SCENARIO_ADDRESS_3, 16));
+        tb_k   <= std_logic_vector(to_unsigned(SCENARIO_LENGTH_3, 10));
+        
+        tb_start <= '1';
+
+        while tb_done /= '1' loop                
+            wait until rising_edge(tb_clk);
+        end loop;
+        
+        wait for 5 ns;
+        
+        tb_start <= '0';
+
         
         wait;
         
@@ -184,6 +265,53 @@ begin
         wait until falling_edge(tb_start);
         assert tb_done = '1' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
         wait until falling_edge(tb_done);
+
+
+        -- second run
+        wait until falling_edge(tb_clk);
+        assert tb_done = '0' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
+        
+        wait until rising_edge(tb_start);
+
+        while tb_done /= '1' loop                
+            wait until rising_edge(tb_clk);
+        end loop;
+
+        assert tb_o_mem_en = '0' or tb_o_mem_we = '0' report "TEST FALLITO o_mem_en !=0 memory should not be written after done." severity failure;
+
+        for i in 0 to SCENARIO_LENGTH_2*2-1 loop
+            assert RAM(SCENARIO_ADDRESS_2+i) = std_logic_vector(to_unsigned(scenario_full_2(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full_2(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(i)))) severity failure;
+        end loop;
+
+        wait until falling_edge(tb_start);
+        assert tb_done = '1' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
+        wait until falling_edge(tb_done);
+
+
+
+        -- third run
+        wait until falling_edge(tb_clk);
+        assert tb_done = '0' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
+        
+        wait until rising_edge(tb_start);
+
+        while tb_done /= '1' loop                
+            wait until rising_edge(tb_clk);
+        end loop;
+
+        assert tb_o_mem_en = '0' or tb_o_mem_we = '0' report "TEST FALLITO o_mem_en !=0 memory should not be written after done." severity failure;
+
+        for i in 0 to SCENARIO_LENGTH_3*2-1 loop
+            assert RAM(SCENARIO_ADDRESS_3+i) = std_logic_vector(to_unsigned(scenario_full_3(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full_3(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(i)))) severity failure;
+        end loop;
+
+        wait until falling_edge(tb_start);
+        assert tb_done = '1' report "TEST FALLITO o_done !=0 after reset before start" severity failure;
+        wait until falling_edge(tb_done);
+
+
+
+        -- end
 
         assert false report "Simulation Ended! TEST PASSATO (EXAMPLE)" severity failure;
     end process;

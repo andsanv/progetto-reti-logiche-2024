@@ -1,14 +1,12 @@
--- TB EXAMPLE PFRL 2023-2024
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity project_tb_03 is
-end project_tb_03;
+entity tb_others_numeric_3 is
+end tb_others_numeric_3;
 
-architecture project_tb_03_arch of project_tb_03 is
+architecture tb_others_numeric_3_arch of tb_others_numeric_3 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -23,15 +21,15 @@ architecture project_tb_03_arch of project_tb_03 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 64;
+    constant SCENARIO_LENGTH : integer := 16#021#;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
 
-    signal scenario_input : scenario_type := (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 2, 0, 1, 0, 4, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 43, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0);
-    signal scenario_full  : scenario_type := (0, 0, 1, 31, 1, 30, 1, 29, 1, 28, 1, 27, 1, 26, 1, 25, 1, 24, 1, 23, 1, 22, 1, 21, 1, 20, 1, 19, 1, 18, 1, 17, 1, 16, 1, 15, 1, 14, 1, 13, 1, 12, 1, 11, 1, 10, 1, 9, 1, 8, 1, 7, 1, 6, 1, 5, 1, 4, 1, 3, 1, 2, 1, 1, 1, 0, 1, 0, 56, 31, 2, 31, 1, 31, 4, 31, 5, 31, 5, 30, 5, 29, 5, 28, 5, 27, 5, 26, 5, 25, 13, 31, 43, 31, 43, 30, 43, 29, 43, 28, 2, 31, 2, 30, 23, 31, 23, 30, 23, 29, 23, 28, 23, 27, 23, 26, 23, 25, 23, 24, 23, 23, 23, 22, 2, 31, 2, 30);
+    signal scenario_input : scenario_type := (16#00#, 16#00#, 16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#89#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#6F#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#B5#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#F6#, 16#00#, 16#7C#, 16#00#, 16#00#, 16#00#, 16#5D#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#);
+    signal scenario_full  : scenario_type := (16#00#, 16#00#, 16#FF#, 16#1F#, 16#FF#, 16#1E#, 16#FF#, 16#1D#, 16#89#, 16#1F#, 16#89#, 16#1E#, 16#89#, 16#1D#, 16#89#, 16#1C#, 16#89#, 16#1B#, 16#89#, 16#1A#, 16#89#, 16#19#, 16#89#, 16#18#, 16#89#, 16#17#, 16#6F#, 16#1F#, 16#6F#, 16#1E#, 16#6F#, 16#1D#, 16#6F#, 16#1C#, 16#B5#, 16#1F#, 16#B5#, 16#1E#, 16#B5#, 16#1D#, 16#B5#, 16#1C#, 16#B5#, 16#1B#, 16#B5#, 16#1A#, 16#F6#, 16#1F#, 16#7C#, 16#1F#, 16#7C#, 16#1E#, 16#5D#, 16#1F#, 16#5D#, 16#1E#, 16#5D#, 16#1D#, 16#5D#, 16#1C#, 16#5D#, 16#1B#, 16#5D#, 16#1A#, 16#5D#, 16#19#);
 
     signal memory_control : std_logic := '0';
     
-    constant SCENARIO_ADDRESS : integer := 67;
+    constant SCENARIO_ADDRESS : integer := 16#0214#;
 
     component project_reti_logiche is
         port (

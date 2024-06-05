@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity tb1 is
-end tb1;
+entity tb_others_numeric_2 is
+end tb_others_numeric_2;
 
-architecture project_tb_arch of tb1 is
+architecture tb_others_numeric_2_arch of tb_others_numeric_2 is
     constant CLOCK_PERIOD : time := 20 ns;
     signal tb_clk : std_logic := '0';
     signal tb_rst, tb_start, tb_done : std_logic;
@@ -21,11 +21,11 @@ architecture project_tb_arch of tb1 is
     type ram_type is array (65535 downto 0) of std_logic_vector(7 downto 0);
     signal RAM : ram_type := (OTHERS => "00000000");
 
-    constant SCENARIO_LENGTH : integer := 16#00A#;
+    constant SCENARIO_LENGTH : integer := 16#023#;
     type scenario_type is array (0 to SCENARIO_LENGTH*2-1) of integer;
 
-    signal scenario_input : scenario_type := (16#33#, 16#00#, 16#00#, 16#00#, 16#39#, 16#00#, 16#18#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#7E#, 16#00#, 16#00#, 16#00#, 16#C0#, 16#00#, 16#00#, 16#00#);
-    signal scenario_full  : scenario_type := (16#33#, 16#1F#, 16#33#, 16#1E#, 16#39#, 16#1F#, 16#18#, 16#1F#, 16#18#, 16#1E#, 16#18#, 16#1D#, 16#7E#, 16#1F#, 16#7E#, 16#1E#, 16#C0#, 16#1F#, 16#C0#, 16#1E#);
+    signal scenario_input : scenario_type := (16#33#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#);
+    signal scenario_full  : scenario_type := (16#33#, 16#1F#, 16#33#, 16#1E#, 16#33#, 16#1D#, 16#33#, 16#1C#, 16#33#, 16#1B#, 16#33#, 16#1A#, 16#33#, 16#19#, 16#33#, 16#18#, 16#33#, 16#17#, 16#33#, 16#16#, 16#33#, 16#15#, 16#33#, 16#14#, 16#33#, 16#13#, 16#33#, 16#12#, 16#33#, 16#11#, 16#33#, 16#10#, 16#33#, 16#0F#, 16#33#, 16#0E#, 16#33#, 16#0D#, 16#33#, 16#0C#, 16#33#, 16#0B#, 16#33#, 16#0A#, 16#33#, 16#09#, 16#33#, 16#08#, 16#33#, 16#07#, 16#33#, 16#06#, 16#33#, 16#05#, 16#33#, 16#04#, 16#33#, 16#03#, 16#33#, 16#02#, 16#33#, 16#01#, 16#33#, 16#00#, 16#33#, 16#00#, 16#33#, 16#00#, 16#33#, 16#00#);
 
     signal memory_control : std_logic := '0';
     
@@ -175,7 +175,7 @@ begin
         assert tb_o_mem_en = '0' or tb_o_mem_we = '0' report "TEST FALLITO o_mem_en !=0 memory should not be written after done." severity failure;
 
         for i in 0 to SCENARIO_LENGTH*2-1 loop
-            assert RAM(SCENARIO_ADDRESS+i) = std_logic_vector(to_unsigned(scenario_full(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(SCENARIO_ADDRESS+i)))) severity failure;
+            assert RAM(SCENARIO_ADDRESS+i) = std_logic_vector(to_unsigned(scenario_full(i),8)) report "TEST FALLITO @ OFFSET=" & integer'image(i) & " expected= " & integer'image(scenario_full(i)) & " actual=" & integer'image(to_integer(unsigned(RAM(i)))) severity failure;
         end loop;
 
         wait until falling_edge(tb_start);
