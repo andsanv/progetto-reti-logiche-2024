@@ -19,7 +19,6 @@
 
 \begin{titlepage}
     \vspace*{-\topskip}
-    %\hrule
     \centering
 
     %
@@ -62,13 +61,12 @@
     % polimi badge
     \vspace{4.25cm}
     {
-        \includegraphics[width=0.6\textwidth]{polimi_badge.png}
+        \includegraphics[width=0.6\textwidth]{images/polimi_badge.png}
     }
-    
     \vfill
     \vspace*{-3.5cm}
-    %\hrule
 \end{titlepage}
+
 
 
 %---------------------------
@@ -111,7 +109,7 @@ Consideriamo l'indirizzo di memoria iniziale \texttt{i\_add} pari a 127 e \textt
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.65\textwidth]{example.png}
+    \includegraphics[width=0.65\textwidth]{images/example.png}
     \caption[short]{memoria RAM prima e dopo le operazioni svolte dal modulo}
 \end{figure}
 
@@ -122,6 +120,7 @@ Il nostro modulo accede in lettura alla memoria all'indirizzo specificato: essen
 La cella successiva a quella appena scritta contiene uno zero, ossia un valore non specificato: il modulo lo sostituisce inserendo l'ultimo valore valido, e decrementa la credibilità, scrivendola nella cella successiva. 
 \bigskip \\ Questo processo continua fino alla cella all'indirizzo 133, dove viene trovato un dato diverso da zero. Il modulo procede ad aggiornare il proprio ultimo valore valido letto, e a riportare la credibilità a 31, scrivendola nella cella successiva.
 \bigskip \\ Tali azioni si ripetono fino a quando il contatore \texttt{k}, decrementato ad ogni lettura, raggiunge lo zero.
+
 
 
 %---------------------------
@@ -135,7 +134,7 @@ La specifica del problema richiede che la soluzione includa un componente con la
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{interface.png}
+    \includegraphics[width=0.6\textwidth]{images/interface.png}
 \end{figure}
 
 Il modulo deve dunque comunicare con altre entità, in particolare:
@@ -264,8 +263,14 @@ Di seguito lo schema implementativo, completo di RAM e segnali di input/output d
 \vspace{0.25cm}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{architecture.png}
+    \includegraphics[width=1\textwidth]{images/architecture.png}
 \end{figure}
+
+
+
+%---------------------------
+%         Section 3
+%---------------------------
 
 \newpage
 \section{Risultati Sperimentali}
@@ -274,7 +279,7 @@ Si è scelto per l'implementazione di utilizzare la board target \texttt{\textbf
 \subsubsection{Report di Utilizzo}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{synth_report.png}
+    \includegraphics[width=0.8\textwidth]{images/synth_report.png}
 \end{figure}
 
 Leggendo il report, possiamo notare che il modulo utilizza:
@@ -336,6 +341,12 @@ Il modulo deve essere in grado di gestire più elaborazioni successive, anche in
 \subsubsection{Risultati}
 La versione finale del modulo riesce a eseguire tutti i testbench senza difficoltà, sia in simulazione \textbf{behavioral} che in \textbf{post-synthesis functional}.
 \medskip \\ Nonostante non fosse richiesto da specifica, si è deciso di simulare le elaborazioni anche in \textbf{post-synthesis timing}, tutte completate con successo. 
+
+
+
+%---------------------------
+%         Section 4
+%---------------------------
 
 \newpage
 \section{Conclusioni}
